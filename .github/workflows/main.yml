@@ -1,0 +1,37 @@
+name: Build FYE ChatNet APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Flutter project
+        run: |
+          unzip -o FYE_ChatNet_Flutter_MVP.zip -d fye_project
+          find fye_project -maxdepth 2 -type f | head -50
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.29.2'
+          channel: stable
+
+      - name: Flutter pub get
+        working-directory: fye_project
+        run: flutter pub get
+
+      - name: Build APK
+        working-directory: fye_project
+        run: flutter build apk --debug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: FYE-ChatNet-APK
+          path: fye_project/build/app/outputs/flutter-apk/app-debug.apk
