@@ -13,14 +13,28 @@ jobs:
 
       - name: Extract Flutter project
         run: |
-          unzip -o FYE_ChatNet_Flutter_MVP.zip -d fye_project
-          find fye_project -maxdepth 2 -type f | head -50
+          unzip -o FYE_ChatNet_Flutter_MVP.zip -d original_project
+          find original_project -maxdepth 2 -type f | head -50
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.29.2'
           channel: stable
+
+      - name: Create fresh Flutter project
+        run: |
+          flutter create --platforms=android fye_project
+
+      - name: Copy FYE ChatNet files
+        run: |
+          cp -r original_project/lib fye_project/
+          
+          if [ -d original_project/assets ]; then
+            cp -r original_project/assets fye_project/
+          fi
+          
+          cp original_project/pubspec.yaml fye_project/pubspec.yaml
 
       - name: Flutter pub get
         working-directory: fye_project
